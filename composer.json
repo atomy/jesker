@@ -1,0 +1,21 @@
+{
+    "name": "iogames/jesker",
+    "authors": [
+        {
+            "name": "Marcel Lamm",
+            "email": "marcel@iogames.de"
+        }
+    ],
+    "autoload": {
+      "psr-0": {
+        "IOGames\\Jesker\\": "src/",
+        "IOGamesTest\\Jesker\\": "tests/"
+      }
+    },
+    "require": {
+      "workerman/workerman": "*"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "*"
+    }
+}

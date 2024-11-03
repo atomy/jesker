@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:latest
+    container_name: php_app
+    volumes:
+      - .:/var/www
+    working_dir: /var/www
+    ports:
+      - "8000:80"
+    command: php -S 0.0.0.0:80
