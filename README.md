@@ -15,6 +15,6 @@ Used for testing applications relying on game server communication.
 
 # Example usage
 
-Here the rcon server is being used to emulate 3 servers with a bunch of players on them and is being used in [RustDroid](https://play.google.com/store/apps/details?id=de.mbdesigns.rustdroid)
+Here the rcon server is being used to emulate 3 servers with a bunch of players on them and is being used in [RustDroid Rcon Android app](https://play.google.com/store/apps/details?id=de.mbdesigns.rustdroid)
 
 ![rustdroid example](https://raw.githubusercontent.com/atomy/jesker/refs/heads/main/docs/rustdroid-example.png)
