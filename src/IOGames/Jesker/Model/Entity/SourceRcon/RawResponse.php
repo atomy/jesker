@@ -11,11 +11,6 @@ use IOGames\Jesker\Service\PacketHelper;
 class RawResponse extends AbstractResponse
 {
     /**
-     * @var string
-     */
-    protected string $packetId;
-
-    /**
      * @return array
      */
     public function getData(): array
