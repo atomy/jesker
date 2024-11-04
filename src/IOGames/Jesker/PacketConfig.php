@@ -4,13 +4,13 @@ namespace IOGames\Jesker;
 
 class PacketConfig
 {
-    public static $passwordRequest = [
-        '13',
+    public static array $passwordRequest = [
+        '*', // packet size, varies on password len
         '00',
         '00',
         '00',
-        '*',
-        ['03', '04'],
+        'b0',
+        '04',
         '00',
         '00',
         '03',
@@ -19,7 +19,7 @@ class PacketConfig
         '00',
     ];
 
-    public static $commandRequest = [
+    public static array $commandRequest = [
         '*', // packet size
         '00',
         '00',
@@ -32,20 +32,5 @@ class PacketConfig
         '00',
         '00',
         '00',
-    ];
-
-    public static $webRconRequest = [
-        '47',
-        '45',
-        '54',
-        '20',
-        '2f',
-        '61',
-        '64',
-        '6d',
-        '69',
-        '6e',
-        '31',
-        '33',
     ];
 }

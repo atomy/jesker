@@ -11,7 +11,7 @@ class Main
 {
     public function work()
     {
-        $tcpWorker = new Worker("tcp://0.0.0.0:28026");
+        $tcpWorker = new Worker(sprintf("tcp://0.0.0.0:%d", getenv('SERVER_PORT')));
         $tcpWorker->count = 1;
         $tcpWorker->onConnect = function(TcpConnection $connection) {
             echo 'New connection!' . PHP_EOL;
@@ -22,10 +22,13 @@ class Main
 
         $tcpWorker->onMessage = function(TcpConnection $connection, $data) use($dataReceiver, $dataUnpacker) {
             $unpackedData = $dataUnpacker->unpack($data);
+            $decodedString = implode('', array_map('hex2bin', $unpackedData));
 
             echo 'RECEIVING: ' . PHP_EOL;
             echo implode(',', $unpackedData);
             echo PHP_EOL;
+            echo ' ASCII: ' . PHP_EOL;
+            echo $decodedString . PHP_EOL;
             echo PHP_EOL;
 
             $dataReceiver->receive($unpackedData);

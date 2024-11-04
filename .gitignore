@@ -1,3 +1,6 @@
 .idea
 vendor/
 composer.lock
+/scripts/push.sh
+/scripts/deploy.sh
+/scripts/build.sh

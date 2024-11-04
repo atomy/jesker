@@ -1,6 +1,6 @@
 services:
   app:
-    image: 613895955229.dkr.ecr.eu-central-1.amazonaws.com/atomy/jesker:latest
+    image: xxx.dkr.ecr.eu-central-1.amazonaws.com
     volumes:
       - .:/var/www
     working_dir: /var/www
@@ -8,5 +8,4 @@ services:
       - "28026:28026"
     environment:
       SERVER_PORT: 28026
-      RCON_PASSWORD: 'admin1337'
-
+      RCON_PASSWORD: 'secure1337'

@@ -2,25 +2,27 @@
 
 namespace IOGames\Jesker\Model\Entity\SourceRcon;
 
+use IOGames\Jesker\Model\Entity\AbstractResponse;
+
 /**
  * Class ChatResponse
  */
-class ChatResponse extends RawResponse
+class ChatResponse extends AbstractResponse
 {
     /**
      * @var string
      */
-    protected $sender;
+    protected string $sender;
 
     /**
-     * @var
+     * @var string
      */
-    protected $message;
+    protected string $message;
 
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         return [
             sprintf('%s0000000000000004000000%s0000', $this->getHexSize(), $this->getEncodedContent())
@@ -30,7 +32,7 @@ class ChatResponse extends RawResponse
     /**
      * @param $sender
      */
-    public function setSender($sender)
+    public function setSender($sender): void
     {
         $this->sender = $sender;
         $this->rawContent = sprintf('[CHAT] %s : %s', $this->sender, $this->message);

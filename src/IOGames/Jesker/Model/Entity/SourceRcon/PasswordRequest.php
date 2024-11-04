@@ -2,10 +2,12 @@
 
 namespace IOGames\Jesker\Model\Entity\SourceRcon;
 
-class PasswordRequest extends AbstractSourceRcon
+use IOGames\Jesker\Model\Entity\AbstractRequest;
+
+class PasswordRequest extends AbstractRequest
 {
     /**
      * @var string
      */
-    public $rconPassword;
+    public string $rconPassword;
 }

@@ -2,22 +2,101 @@
 
 namespace IOGames\Jesker\Model\Entity\SourceRcon;
 
-class StatusResponse extends AbstractSourceRcon
+use IOGames\Jesker\Model\Entity\AbstractResponse;
+use IOGames\Jesker\Model\Entity\Player;
+use IOGames\Jesker\Service\PacketHelper;
+
+class StatusResponse extends AbstractResponse
 {
+    const PAKET_CODE_RESPONSE = '03';
+
     /**
-     * @var
+     * @var int
      */
-    public $packetId;
+    public int $joiningPlayers = 0;
+
+    /**
+     * @var int
+     */
+    public int $queuedPlayers = 0;
+
+    /**
+     * @var int
+     */
+    public int $maxPlayers = 499;
+
+    /**
+     * @var Player[]
+     */
+    public array $players;
+
+    /**
+     * @var string
+     */
+    public string $mapName = 'Procedural Map';
+
+    /**
+     * @var string
+     */
+    public string $hostname = 'Rcon Legacy 28026';
 
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
+        $content = sprintf('%s%s000000000000%s', $this->packetId, self::PAKET_CODE_RESPONSE, $this->getServerStatus());
+        $packetSize = PacketHelper::calculatePacketSize($content);
+
         return [
             '2a00000000000000040000005b52434f4e5d5b39352e39302e3231342e323a32363032365d207374617475730000',
-            /* 'e2000000e803000000000000686f73746e616d653a2052636f6e204c65676163792032383032360a76657273696f6e203a2031393238207365637572652028736563757265206d6f646520656e61626c65642c20636f6e6e656374656420746f20537465616d33290a6d617020202020203a2050726f6365647572616c204d61700a706c6179657273203a20302028353030206d6178292028302071756575656429202830206a6f696e696e67290a0a6964206e616d652070696e6720636f6e6e65637465642061646472206f776e65722076696f6c6174696f6e206b69636b73200d0a0000',*/ // no players
-            sprintf('54010000%s03000000000000686f73746e616d653a2052636f6e204c65676163792032383032360a76657273696f6e203a2031393238207365637572652028736563757265206d6f646520656e61626c65642c20636f6e6e656374656420746f20537465616d33290a6d617020202020203a2050726f6365647572616c204d61700a706c6179657273203a20312028353030206d6178292028302071756575656429202830206a6f696e696e67290a0a6964202020202020202020202020202020206e616d652020202070696e6720636f6e6e6563746564206164647220202020202020202020202020206f776e65722076696f6c6174696f6e206b69636b73200d0a3736353631313937393630353235353030202261746f6d792220333020202039372e3538387320202039352e39302e3231342e323a363335363520202020202020302e30202020202020203020202020200d0a0000', $this->packetId) // 1 player
+            sprintf('%s%s', $packetSize, $content) // Packet with players
         ];
+    }
+
+    /**
+     * Build and return *status* response.
+     *
+     * @return string
+     */
+    private function getServerStatus(): string
+    {
+        // Define the server status data
+        $serverStatus = [
+            'hostname' => $this->hostname,
+            'version' => '1928 secure (secure mode enabled, connected to Steam3)',
+            'map' => $this->mapName,
+            'players' => sprintf('%d (%d max) (%d queued) (%d joining)', count($this->players), $this->maxPlayers, $this->queuedPlayers, $this->joiningPlayers)
+        ];
+
+        // Construct the packet content dynamically with formatting
+        $packetContent = sprintf(
+            "hostname: %s\n" .
+            "version : %s\n" .
+            "map     : %s\n" .
+            "players : %s\n\n" .
+            "id                name    ping connected addr              owner kicks \n",
+            $serverStatus['hostname'],
+            $serverStatus['version'],
+            $serverStatus['map'],
+            $serverStatus['players']
+        );
+
+        // Add player information
+        foreach ($this->players as $player) {
+            $packetContent .= sprintf(
+                "%-17s \"%s\" %-4s %-9s %-20s %-9s %-9s\n",
+                $player->steamId,
+                $player->name,
+                $player->ping,
+                $player->connected,
+                $player->ip,
+                '0.0', // Placeholder for owner
+                '0'    // Placeholder for kicks
+            );
+        }
+
+        // Convert the content to hex
+        return bin2hex($packetContent);
     }
 }

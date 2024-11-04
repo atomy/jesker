@@ -2,27 +2,23 @@
 
 namespace IOGames\Jesker\Model\Entity\SourceRcon;
 
+use IOGames\Jesker\Model\Entity\AbstractResponse;
 use IOGames\Jesker\Service\PacketHelper;
 
 /**
  * Class RawResponse
  */
-class RawResponse extends AbstractSourceRcon
+class RawResponse extends AbstractResponse
 {
     /**
      * @var string
      */
-    protected $packetId;
-
-    /**
-     * @var string
-     */
-    protected $rawContent;
+    protected string $packetId;
 
     /**
      * @return array
      */
-    public function getData()
+    public function getData(): array
     {
         /**
          * RECEIVED COMMAND: test
@@ -39,23 +35,26 @@ class RawResponse extends AbstractSourceRcon
     /**
      * @param $rawContent
      */
-    public function setRawContent($rawContent)
+    public function setRawContent($rawContent): void
     {
         $this->rawContent = $rawContent;
     }
 
     /**
      * @param $packetId
+     * @return RawResponse
      */
-    public function setPacketId($packetId)
+    public function setPacketId($packetId): self
     {
         $this->packetId = $packetId;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getEncodedContent()
+    public function getEncodedContent(): string
     {
         return PacketHelper::encode($this->rawContent);
     }
@@ -63,7 +62,7 @@ class RawResponse extends AbstractSourceRcon
     /**
      * @return string
      */
-    public function getHexSize()
+    public function getHexSize(): string
     {
         $hex = dechex(strlen($this->rawContent) + 10);
 

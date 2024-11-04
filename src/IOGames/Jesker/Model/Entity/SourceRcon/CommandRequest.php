@@ -2,15 +2,17 @@
 
 namespace IOGames\Jesker\Model\Entity\SourceRcon;
 
-class CommandRequest extends AbstractSourceRcon
+use IOGames\Jesker\Model\Entity\AbstractRequest;
+
+class CommandRequest extends AbstractRequest
 {
     /**
-     * @var
+     * @var string
      */
-    public $command;
+    public string $command;
 
     /**
-     * @var int
+     * @var string
      */
-    public $receivedPacketId;
+    public string $receivedPacketId;
 }

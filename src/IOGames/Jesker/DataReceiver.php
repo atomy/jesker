@@ -2,6 +2,7 @@
 
 namespace IOGames\Jesker;
 
+use IOGames\Jesker\Model\Entity\AbstractResponse;
 use IOGames\Jesker\Model\Entity\SourceRcon\CommandRequest;
 use IOGames\Jesker\Model\Entity\SourceRcon\PasswordRequest;
 
@@ -13,17 +14,22 @@ class DataReceiver
     /**
      * @var PacketGuesser
      */
-    protected $packetGuesser;
+    protected PacketGuesser $packetGuesser;
 
     /**
-     * @var Model\Entity\SourceRcon\AbstractSourceRcon
+     * @var Model\Entity\AbstractRequest
      */
-    protected $requestEntity;
+    protected Model\Entity\AbstractRequest $requestEntity;
 
     /**
-     * @var
+     * @var AbstractResponse[]
      */
-    protected $responseEntities;
+    protected array $responseEntities;
+
+    /**
+     * @var CommunicationWorkflow
+     */
+    protected CommunicationWorkflow $communicationWorkflow;
 
     /**
      * DataReceiver constructor.
@@ -36,9 +42,9 @@ class DataReceiver
 
     /**
      * @param $unpackedData
-     * @return Model\Entity\SourceRcon\AbstractSourceRcon
+     * @return Model\Entity\AbstractRequest|null
      */
-    public function receive($unpackedData)
+    public function receive($unpackedData): ?Model\Entity\AbstractRequest
     {
         // reset response
         $this->responseEntities = [];
@@ -56,9 +62,9 @@ class DataReceiver
     }
 
     /**
-     * @return Model\Entity\SourceRcon\AbstractSourceRcon[]
+     * @return Model\Entity\AbstractResponse[]
      */
-    public function getResponse()
+    public function getResponse(): array
     {
         try {
             $this->determineResponse();
@@ -72,7 +78,7 @@ class DataReceiver
     /**
      *
      */
-    public function determineResponse()
+    public function determineResponse(): void
     {
         if (empty($this->responseEntities)) {
             $this->responseEntities = $this->communicationWorkflow->getResponse($this->requestEntity);
@@ -82,14 +88,16 @@ class DataReceiver
     /**
      *
      */
-    private function postProcessReceive()
+    private function postProcessReceive(): void
     {
         if ($this->requestEntity instanceof PasswordRequest) {
-            if ($this->requestEntity->rconPassword == 'pw10') {
+            echo sprintf("Validating input password '%s' to preset password '%s'\n", getenv('RCON_PASSWORD'), $this->requestEntity->rconPassword);
+
+            if ($this->requestEntity->rconPassword == getenv('RCON_PASSWORD')) {
                 echo 'SUCCESSFULLY AUTHED' . PHP_EOL;
                 $this->communicationWorkflow->isAuthed = true;
             } else {
-                throw new \RuntimeException("Received auth packet with wrong password: '%s'");
+                throw new \RuntimeException(sprintf("Received auth packet with wrong password: '%s' (expected: '%s')", $this->requestEntity->rconPassword, getenv('RCON_PASSWORD')));
             }
         } elseif ($this->requestEntity instanceof CommandRequest) {
             echo 'RECEIVED COMMAND: ' . $this->requestEntity->command . PHP_EOL;

@@ -4,6 +4,7 @@ namespace IOGames\Jesker;
 
 use IOGames\Jesker\Model\Entity\SourceRcon\CommandRequest;
 use IOGames\Jesker\Model\Entity\SourceRcon\PasswordRequest;
+use IOGames\Jesker\Model\Entity\Websocket\WebsocketAuthRequest;
 
 class PacketGuesser
 {
@@ -36,18 +37,23 @@ class PacketGuesser
     }
 
     /**
-     * @return Model\Entity\SourceRcon\AbstractSourceRcon
+     * @return Model\Entity\SourceRcon\AbstractSourceRcon|WebsocketAuthRequest
      */
-    public function guess()
+    public function guess(): PasswordRequest|Model\Entity\SourceRcon\AbstractSourceRcon|CommandRequest|WebsocketAuthRequest|null
     {
         $guessSlice = array_slice($this->unpackedPacketData, 0, 12);
         $remainingData = array_slice($this->unpackedPacketData, 12);
+        $decodedString = implode('', array_map('hex2bin', $this->unpackedPacketData));
 
-        if ($this->packetMatcher->setRule(PacketConfig::$passwordRequest)->doesMatch($guessSlice)) {
+        if (preg_match('/GET \/(\S+)\sHTTP\/1\.1/', $decodedString, $matches)) {
+            $inputPassword = $matches[1];
+
+            return new WebsocketAuthRequest($inputPassword);
+        } elseif ($this->packetMatcher->setRule(PacketConfig::$passwordRequest)->doesMatch($guessSlice)) {
             $passwordRequest = new PasswordRequest();
 
-            $reminingDataAsString = $this->decodeData($remainingData);
-            $passwordRequest->rconPassword = $reminingDataAsString;
+            $remainingDataAsString = $this->decodeData($remainingData);
+            $passwordRequest->rconPassword = $remainingDataAsString;
 
             return $passwordRequest;
         } elseif ($this->packetMatcher->setRule(PacketConfig::$commandRequest)->doesMatch($guessSlice)) {
@@ -55,12 +61,10 @@ class PacketGuesser
             $commandRequest = new CommandRequest();
             $commandRequest->receivedPacketId = $sentPacketId;
 
-            $reminingDataAsString = $this->decodeData($remainingData);
-            $commandRequest->command = $reminingDataAsString;
+            $remainingDataAsString = $this->decodeData($remainingData);
+            $commandRequest->command = $remainingDataAsString;
 
             return $commandRequest;
-        } elseif ($this->packetMatcher->setRule(PacketConfig::$webRconRequest)->doesMatch($guessSlice)) {
-            return null;
         }
 
         throw new \RuntimeException(sprintf(

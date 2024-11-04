@@ -1,21 +1,22 @@
 {
-    "name": "iogames/jesker",
-    "authors": [
-        {
-            "name": "Marcel Lamm",
-            "email": "marcel@iogames.de"
-        }
-    ],
-    "autoload": {
-      "psr-0": {
-        "IOGames\\Jesker\\": "src/",
-        "IOGamesTest\\Jesker\\": "tests/"
-      }
-    },
-    "require": {
-      "workerman/workerman": "*"
-    },
-    "require-dev": {
-      "phpunit/phpunit": "*"
+  "name": "iogames/jesker",
+  "authors": [
+    {
+      "name": "Marcel Lamm",
+      "email": "marcel@iogames.de"
     }
+  ],
+  "autoload": {
+    "psr-0": {
+      "IOGames\\Jesker\\": "src/",
+      "IOGamesTest\\Jesker\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^8.2",
+    "workerman/workerman": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
 }
