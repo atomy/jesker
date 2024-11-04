@@ -9,10 +9,6 @@ Used for testing applications relying on game server communication.
 - Rust Web-RCON
 - API to influence reponses while it is running, like changing players, chat messages, console messages
 
-## API
-- Fake responses can be injected using the following API:
-- TBD
-
 # Example usage
 
 Here the rcon server is being used to emulate 3 servers with a bunch of players on them and is being used in [RustDroid Rcon Android app](https://play.google.com/store/apps/details?id=de.mbdesigns.rustdroid)
