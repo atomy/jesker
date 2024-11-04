@@ -42,7 +42,8 @@ class CommunicationWorkflow
                     $statusResponse->packetId = $requestEntity->receivedPacketId;
                 }
 
-                $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(32);
+                $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(getenv('FAKE_PLAYER_COUNT'));
+                $statusResponse->hostname = getenv('SERVER_NAME');
 
                 return [$statusResponse];
             } elseif ($requestEntity->command == 'test') {

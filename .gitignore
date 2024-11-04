@@ -5,3 +5,4 @@ composer.lock
 /scripts/deploy.sh
 /scripts/build.sh
 /docker-compose-prod.yml
+/docker-compose2.yml

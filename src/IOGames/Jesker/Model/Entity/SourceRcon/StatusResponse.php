@@ -38,7 +38,7 @@ class StatusResponse extends AbstractResponse
     /**
      * @var string
      */
-    public string $hostname = 'Rcon Legacy 28026';
+    public string $hostname = '2nd server';
 
     /**
      * @return array

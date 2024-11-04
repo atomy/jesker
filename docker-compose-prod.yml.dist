@@ -1,0 +1,31 @@
+services:
+  jesker:
+    image: xxx.dkr.ecr.eu-central-1.amazonaws.com/atomy/jesker:latest
+    working_dir: /var/www
+    ports:
+      - "28025:28025"
+    environment:
+      SERVER_PORT: 28025
+      RCON_PASSWORD: 'xxx'
+      FAKE_PLAYER_COUNT: 154
+      SERVER_NAME: 'name1'
+  jesker2:
+    image: xxx.dkr.ecr.eu-central-1.amazonaws.com/atomy/jesker:latest
+    working_dir: /var/www
+    ports:
+      - "28026:28026"
+    environment:
+      SERVER_PORT: 28026
+      RCON_PASSWORD: 'xxx'
+      FAKE_PLAYER_COUNT: 52
+      SERVER_NAME: 'name2'
+  jesker3:
+    image: xxx.dkr.ecr.eu-central-1.amazonaws.com/atomy/jesker:latest
+    working_dir: /var/www
+    ports:
+      - "28027:28027"
+    environment:
+      SERVER_PORT: 28027
+      RCON_PASSWORD: 'xxxx'
+      FAKE_PLAYER_COUNT: 66
+      SERVER_NAME: 'name3'

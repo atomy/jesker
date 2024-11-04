@@ -1,5 +1,5 @@
 services:
-  app:
+  jesker:
     image: 613895955229.dkr.ecr.eu-central-1.amazonaws.com/atomy/jesker:latest
     volumes:
       - .:/var/www
@@ -9,4 +9,7 @@ services:
     environment:
       SERVER_PORT: 28026
       RCON_PASSWORD: 'admin1337'
+      FAKE_PLAYER_COUNT: 69
+      SERVER_NAME: 'EU Cool rust server'
+
 
