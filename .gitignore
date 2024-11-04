@@ -4,3 +4,4 @@ composer.lock
 /scripts/push.sh
 /scripts/deploy.sh
 /scripts/build.sh
+/docker-compose-prod.yml
