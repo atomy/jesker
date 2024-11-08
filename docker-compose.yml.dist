@@ -8,4 +8,5 @@ services:
       - "28026:28026"
     environment:
       SERVER_PORT: 28026
+      RCON_WEB: true
       RCON_PASSWORD: 'secure1337'
