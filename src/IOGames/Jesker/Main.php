@@ -30,9 +30,9 @@ class Main
      */
     public function createWorker(): void
     {
-        $rconWeb = (bool) Helper::validateAndGetEnv('RCON_WEB');
+        $rconWeb = Helper::validateAndGetEnv('RCON_WEB');
 
-        if ($rconWeb) {
+        if ($rconWeb === true || $rconWeb === 'true' || $rconWeb === 1 || $rconWeb === '1') {
             $this->createWebRconWorker();
         } else {
             $this->createSourceRconWorker();

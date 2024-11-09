@@ -1,5 +1,6 @@
 {
   "name": "iogames/jesker",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Marcel Lamm",
@@ -13,7 +14,7 @@
     }
   },
   "require": {
-    "php": "^8.2",
+    "php": "^8.3",
     "workerman/workerman": "*"
   },
   "require-dev": {
