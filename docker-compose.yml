@@ -8,6 +8,7 @@ services:
       - "28026:28026"
     environment:
       SERVER_PORT: 28026
+      RCON_WEB: true
       RCON_PASSWORD: 'admin1337'
       FAKE_PLAYER_COUNT: 69
       SERVER_NAME: 'EU Cool rust server'

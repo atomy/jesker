@@ -3,4 +3,5 @@
 require_once 'vendor/autoload.php';
 
 $main = new \IOGames\Jesker\Main();
-$main->work();
+$main->createWorker();
+$main->run();

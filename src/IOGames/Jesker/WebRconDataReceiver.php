@@ -4,17 +4,18 @@ namespace IOGames\Jesker;
 
 use IOGames\Jesker\Model\Entity\AbstractResponse;
 use IOGames\Jesker\Model\Entity\SourceRcon\CommandRequest;
-use IOGames\Jesker\Model\Entity\SourceRcon\PasswordRequest;
+use IOGames\Jesker\Model\Entity\SourceRcon\PasswordRequest as SourceRconPasswordRequest;
+use IOGames\Jesker\Model\Entity\WebRcon\PasswordRequest as WebRconPasswordRequest;
 
 /**
- * Class DataReceiver
+ * Class WebRconDataReceiver
  */
-class DataReceiver
+class WebRconDataReceiver
 {
     /**
-     * @var PacketGuesser
+     * @var WebRconPacketGuesser
      */
-    protected PacketGuesser $packetGuesser;
+    protected WebRconPacketGuesser $webPacketPacketGuesser;
 
     /**
      * @var Model\Entity\AbstractRequest
@@ -36,23 +37,25 @@ class DataReceiver
      */
     public function __construct()
     {
-        $this->packetGuesser = new PacketGuesser();
+        $this->webPacketPacketGuesser = new WebRconPacketGuesser();
         $this->communicationWorkflow = new CommunicationWorkflow();
     }
 
     /**
-     * @param $unpackedData
+     * Receive input data.
+     *
+     * @param string $inputData
      * @return Model\Entity\AbstractRequest|null
      */
-    public function receive($unpackedData): ?Model\Entity\AbstractRequest
+    public function receive(string $inputData): ?Model\Entity\AbstractRequest
     {
         // reset response
         $this->responseEntities = [];
 
-        $this->packetGuesser->setUnpackedPacketData($unpackedData);
+        $this->webPacketPacketGuesser->setData($inputData);
 
         try {
-            $this->requestEntity = $this->packetGuesser->guess();
+            $this->requestEntity = $this->webPacketPacketGuesser->guess();
             $this->postProcessReceive();
         } catch (\Exception $e) {
             error_log($e); // %TODO, logger
@@ -90,7 +93,7 @@ class DataReceiver
      */
     private function postProcessReceive(): void
     {
-        if ($this->requestEntity instanceof PasswordRequest) {
+        if ($this->requestEntity instanceof SourceRconPasswordRequest) {
             echo sprintf("Validating input password '%s' to preset password '%s'\n", Helper::validateAndGetEnv('RCON_PASSWORD'), $this->requestEntity->rconPassword);
 
             if ($this->requestEntity->rconPassword == Helper::validateAndGetEnv('RCON_PASSWORD')) {
@@ -101,6 +104,17 @@ class DataReceiver
             }
         } elseif ($this->requestEntity instanceof CommandRequest) {
             echo 'RECEIVED COMMAND: ' . $this->requestEntity->command . PHP_EOL;
+        } elseif ($this->requestEntity instanceof WebRconPasswordRequest) {
+            echo sprintf("Validating input password '%s' to preset password '%s'\n", Helper::validateAndGetEnv('RCON_PASSWORD'), $this->requestEntity->rconPassword);
+
+            if ($this->requestEntity->rconPassword == Helper::validateAndGetEnv('RCON_PASSWORD')) {
+                echo 'SUCCESSFULLY AUTHED' . PHP_EOL;
+                $this->communicationWorkflow->isAuthed = true;
+                $this->communicationWorkflow->errorWrongPassword = false;
+            } else {
+                $this->communicationWorkflow->errorWrongPassword = true;
+                echo sprintf("Received auth packet with wrong password: '%s' (expected: '%s')", $this->requestEntity->rconPassword, Helper::validateAndGetEnv('RCON_PASSWORD')) . PHP_EOL;
+            }
         }
     }
 }

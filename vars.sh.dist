@@ -1,0 +1,5 @@
+export SERVER_PORT=28025
+export RCON_WEB=true
+export RCON_PASSWORD=xxxx
+export FAKE_PLAYER_COUNT=44
+export SERVER_NAME="UK super rust server"
