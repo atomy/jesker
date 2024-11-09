@@ -6,6 +6,11 @@ use IOGames\Jesker\Model\Entity\SourceRcon\AbstractSourceRcon;
 use Workerman\Connection\TcpConnection;
 use Workerman\Worker;
 
+/**
+ * Class Main.
+ *
+ * All magic happens in here, and begins here.
+ */
 class Main
 {
     /**
@@ -25,7 +30,7 @@ class Main
      */
     public function createWorker(): void
     {
-        $rconWeb = (bool) getenv('RCON_WEB');
+        $rconWeb = (bool) Helper::validateAndGetEnv('RCON_WEB');
 
         if ($rconWeb) {
             $this->createWebRconWorker();
@@ -42,12 +47,14 @@ class Main
     protected function createSourceRconWorker(): void
     {
         echo __METHOD__ . PHP_EOL;
-        echo sprintf("Creating source-rcon-server with address: '%s'", sprintf("tcp://0.0.0.0:%d", getenv('SERVER_PORT'))) . PHP_EOL;
+        echo sprintf("[SOURCE] Creating rcon-server with address: '%s'", sprintf("tcp://0.0.0.0:%d", Helper::validateAndGetEnv('SERVER_PORT'))) . PHP_EOL;
 
-        $tcpWorker = new Worker(sprintf("tcp://0.0.0.0:%d", getenv('SERVER_PORT')));
+        $tcpWorker = new Worker(sprintf("tcp://0.0.0.0:%d", Helper::validateAndGetEnv('SERVER_PORT')));
         $tcpWorker->count = 1;
         $tcpWorker->onConnect = function(TcpConnection $connection) {
-            echo 'New connection!' . PHP_EOL;
+            $remoteIp = $connection->getRemoteIp();
+            $remotePort = $connection->getRemotePort();
+            echo "New connection from {$remoteIp}:{$remotePort}" . PHP_EOL;
         };
 
         $dataUnpacker = new DataUnpacker();
@@ -68,7 +75,6 @@ class Main
             $responseEntities = $dataReceiver->getResponse();
 
             if (count($responseEntities) > 0) {
-                /** @var AbstractSourceRcon $responseEntity */
                 foreach ($responseEntities as $responseEntity) {
                     $sendData = $responseEntity->getData();
 
@@ -78,15 +84,6 @@ class Main
                     }
                 }
             }
-        };
-
-        $tcpWorker->onWorkerReload = function(Worker $worker) {
-            echo 'RELOAD: ' . PHP_EOL . PHP_EOL;
-            var_dump($worker);
-        };
-
-        $tcpWorker->onClose = function($connection) {
-            echo "Connection closed\n";
         };
     }
 
@@ -98,43 +95,34 @@ class Main
     protected function createWebRconWorker(): void
     {
         echo __METHOD__ . PHP_EOL;
-        echo sprintf("Creating web-rcon-server with address: '%s'", sprintf("tcp://0.0.0.0:%d", getenv('SERVER_PORT'))) . PHP_EOL;
+        echo sprintf("[WEBSOCKET] Creating WEBSOCKET-rcon-server with address: '%s'", sprintf("websocket://0.0.0.0:%d", Helper::validateAndGetEnv('SERVER_PORT'))) . PHP_EOL;
 
-        $tcpWorker = new Worker(sprintf("tcp://0.0.0.0:%d", getenv('SERVER_PORT')));
+        $tcpWorker = new Worker(sprintf("websocket://0.0.0.0:%d", Helper::validateAndGetEnv('SERVER_PORT')));
         $tcpWorker->count = 1;
         $tcpWorker->onConnect = function(TcpConnection $connection) {
-            echo 'New connection!' . PHP_EOL;
+            $remoteIp = $connection->getRemoteIp();
+            $remotePort = $connection->getRemotePort();
+            echo "New connection from {$remoteIp}:{$remotePort}" . PHP_EOL;
         };
 
         $webRconDataReceiver = new WebRconDataReceiver();
-
         $tcpWorker->onMessage = function(TcpConnection $connection, $data) use($webRconDataReceiver) {
             echo 'RECEIVING: ' . PHP_EOL;
-            var_dump($data);die(__METHOD__ . ':' . __LINE__);
+            echo $data . PHP_EOL;
 
             $webRconDataReceiver->receive($data);
             $responseEntities = $webRconDataReceiver->getResponse();
-var_dump($responseEntities);die(__METHOD__ . ':' . __LINE__);
-            if (count($responseEntities) > 0) {
-                /** @var AbstractSourceRcon $responseEntity */
-                foreach ($responseEntities as $responseEntity) {
-                    $sendData = $responseEntity->getData();
 
-                    foreach ($sendData as $sendDataEntry) {
-                        echo 'SENDING: ' . $sendDataEntry . PHP_EOL;
-                        $connection->send(pack('H*', $sendDataEntry));
+            if (count($responseEntities) > 0) {
+                foreach ($responseEntities as $responseEntity) {
+                    $sendDataElements = $responseEntity->getData();
+
+                    foreach ($sendDataElements as $sendData) {
+                        echo 'SENDING: ' . $sendData . PHP_EOL;
+                        $connection->send($sendData);
                     }
                 }
             }
-        };
-
-        $tcpWorker->onWorkerReload = function(Worker $worker) {
-            echo 'RELOAD: ' . PHP_EOL . PHP_EOL;
-            var_dump($worker);
-        };
-
-        $tcpWorker->onClose = function($connection) {
-            echo "Connection closed\n";
         };
     }
 }

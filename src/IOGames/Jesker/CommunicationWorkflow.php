@@ -10,15 +10,29 @@ use IOGames\Jesker\Model\Entity\SourceRcon\PasswordRequest;
 use IOGames\Jesker\Model\Entity\SourceRcon\PasswordResponse;
 use IOGames\Jesker\Model\Entity\SourceRcon\RawResponse;
 use IOGames\Jesker\Model\Entity\SourceRcon\StatusResponse;
+use IOGames\Jesker\Model\Entity\StatusRequest;
 use IOGames\Jesker\Model\Entity\Websocket\WebsocketAuthRequest;
 use IOGames\Jesker\Service\Data\Database;
+use IOGames\Jesker\Model\Entity\WebRcon\PasswordRequest as WebSocketPasswordRequest;
+use IOGames\Jesker\Model\Entity\WebRcon\PasswordResponse as WebSocketPasswordResponse;
+use IOGames\Jesker\Model\Entity\WebRcon\StatusResponse as WebRconStatusResponse;
 
+/**
+ * Class CommunicationWorkflow.
+ *
+ * Handle communication workflow state and decide based on that state the correct responses.
+ */
 class CommunicationWorkflow
 {
     /**
      * @var bool
      */
-    public $isAuthed = false;
+    public bool $isAuthed = false;
+
+    /**
+     * @var true
+     */
+    public bool $errorWrongPassword;
 
     /**
      * @param AbstractRequest|null $requestEntity
@@ -26,10 +40,19 @@ class CommunicationWorkflow
      */
     public function getResponse(AbstractRequest $requestEntity = null): array
     {
-        if ($requestEntity instanceof PasswordRequest) {
+        if ($requestEntity instanceof StatusRequest) {
+            $statusResponse = new WebRconStatusResponse($requestEntity->identifier);
+
+            $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(Helper::validateAndGetEnv('FAKE_PLAYER_COUNT'));
+            $statusResponse->hostname = Helper::validateAndGetEnv('SERVER_NAME');
+
+            return [$statusResponse];
+        } elseif ($requestEntity instanceof PasswordRequest) {
             return [new PasswordResponse()];
         } elseif ($requestEntity instanceof WebsocketAuthRequest) {
             return [];
+        } elseif ($requestEntity instanceof WebSocketPasswordRequest) {
+            return [new WebSocketPasswordResponse($this->errorWrongPassword, $requestEntity->headers)];
         } elseif ($requestEntity instanceof CommandRequest) {
             if (!$this->isAuthed) {
                 throw new \RuntimeException('Tried to send command without being authed!');
@@ -42,8 +65,8 @@ class CommunicationWorkflow
                     $statusResponse->packetId = $requestEntity->receivedPacketId;
                 }
 
-                $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(getenv('FAKE_PLAYER_COUNT'));
-                $statusResponse->hostname = getenv('SERVER_NAME');
+                $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(Helper::validateAndGetEnv('FAKE_PLAYER_COUNT'));
+                $statusResponse->hostname = Helper::validateAndGetEnv('SERVER_NAME');
 
                 return [$statusResponse];
             } elseif ($requestEntity->command == 'test') {

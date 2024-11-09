@@ -6,3 +6,4 @@ composer.lock
 /scripts/build.sh
 /docker-compose-prod.yml
 /docker-compose2.yml
+/vars.sh
