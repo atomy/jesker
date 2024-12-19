@@ -45,26 +45,60 @@ class LobbyBuilder
     }
 
     /**
-     * Return players if none exists yet, create them.
+     * Return existing players.
      *
-     * @param int $count
      * @return array
      */
-    public function getPlayers(int $count = 1): array
+    public function getPlayers(): array
     {
         if (empty($this->players)) {
-            $this->createLobby($count);
+            throw new \RuntimeException('Lobby has not yet created!');
         }
 
         return $this->players;
     }
 
     /**
-     * @param int $count
+     * Create a lobby by predefined json input data.
+     *
+     * @param string $jsonData input player data
      * @return void
      */
-    private function createLobby(int $count): void
+    public function createLobbyByJson(string $jsonData): void
     {
+        // ignore when lobby already exists
+        if (!empty($this->players)) {
+            return;
+        }
+
+        $jsonData = json_decode($jsonData, true);
+
+        if (count($jsonData) > self::MAX_PLAYERS) {
+            throw new \InvalidArgumentException("Cannot create more than " . self::MAX_PLAYERS . " players.");
+        }
+
+        foreach ($jsonData as $jsonEntry) {
+            $ping = rand(1, 100); // Random ping between 1 and 100 ms
+            $connected = $this->generateRandomConnectedTime(); // Generate random connected time
+            $ip = $this->generateRandomIp(); // Generate random IP
+
+            $this->players[] = new Player($jsonEntry['steamId'], $jsonEntry['name'], $ping, $connected, $ip);
+        }
+    }
+
+    /**
+     * Create a fake lobby with supplied count of players.
+     *
+     * @param int $count input player-count
+     * @return void
+     */
+    public function createLobby(int $count): void
+    {
+        // ignore when lobby already exists
+        if (!empty($this->players)) {
+            return;
+        }
+
         if ($count > self::MAX_PLAYERS) {
             throw new \InvalidArgumentException("Cannot create more than " . self::MAX_PLAYERS . " players.");
         }

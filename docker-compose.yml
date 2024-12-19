@@ -10,7 +10,7 @@ services:
       SERVER_PORT: 28026
       RCON_WEB: true
       RCON_PASSWORD: 'admin1337'
-      FAKE_PLAYER_COUNT: 69
+      FAKE_PLAYERS: '[{"name": "Robin", "steamId": "76561197960435530"},{"name": "jason", "steamId": "76561197978236369"}]'
       SERVER_NAME: 'EU Cool rust server'
 
 

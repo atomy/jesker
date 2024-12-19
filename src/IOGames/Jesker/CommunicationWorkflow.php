@@ -43,7 +43,13 @@ class CommunicationWorkflow
         if ($requestEntity instanceof StatusRequest) {
             $statusResponse = new WebRconStatusResponse($requestEntity->identifier);
 
-            $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(Helper::validateAndGetEnv('FAKE_PLAYER_COUNT'));
+            if (getenv('FAKE_PLAYERS')) {
+                LobbyBuilder::getInstance()->createLobbyByJson(Helper::validateAndGetEnv('FAKE_PLAYERS'));
+            } else {
+                LobbyBuilder::getInstance()->createLobby(Helper::validateAndGetEnv('FAKE_PLAYER_COUNT'));
+            }
+
+            $statusResponse->players = LobbyBuilder::getInstance()->getPlayers();
             $statusResponse->hostname = Helper::validateAndGetEnv('SERVER_NAME');
 
             return [$statusResponse];
@@ -65,7 +71,13 @@ class CommunicationWorkflow
                     $statusResponse->packetId = $requestEntity->receivedPacketId;
                 }
 
-                $statusResponse->players = LobbyBuilder::getInstance()->getPlayers(Helper::validateAndGetEnv('FAKE_PLAYER_COUNT'));
+                if (getenv('FAKE_PLAYERS')) {
+                    LobbyBuilder::getInstance()->createLobbyByJson(Helper::validateAndGetEnv('FAKE_PLAYERS'));
+                } else {
+                    LobbyBuilder::getInstance()->createLobby(Helper::validateAndGetEnv('FAKE_PLAYER_COUNT'));
+                }
+
+                $statusResponse->players = LobbyBuilder::getInstance()->getPlayers();
                 $statusResponse->hostname = Helper::validateAndGetEnv('SERVER_NAME');
 
                 return [$statusResponse];
