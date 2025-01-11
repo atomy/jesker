@@ -2,8 +2,13 @@
 
 namespace IOGames\Jesker;
 
+use IOGames\Jesker\Model\Entity\AbstractRequest;
+use IOGames\Jesker\Model\Entity\HeaderimageRequest;
 use IOGames\Jesker\Model\Entity\StatusRequest;
 
+/**
+ * Class WebRconPacketGuesser.
+ */
 class WebRconPacketGuesser
 {
     /**
@@ -23,14 +28,18 @@ class WebRconPacketGuesser
     }
 
     /**
-     * @return StatusRequest
+     * @return AbstractRequest
      */
-    public function guess(): StatusRequest
+    public function guess(): AbstractRequest
     {
         $jsonData = json_decode($this->data, true);
 
         if (isset($jsonData['Name']) && $jsonData['Name'] === 'WebRcon' && isset($jsonData['Message']) && $jsonData['Message'] === 'status') {
             return new StatusRequest($jsonData['Identifier']);
+        }
+
+        if (isset($jsonData['Name']) && $jsonData['Name'] === 'WebRcon' && isset($jsonData['Message']) && $jsonData['Message'] === 'server.headerimage') {
+            return new HeaderimageRequest($jsonData['Identifier']);
         }
 
         throw new \RuntimeException(sprintf(

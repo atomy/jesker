@@ -10,3 +10,6 @@ services:
       SERVER_PORT: 28026
       RCON_WEB: true
       RCON_PASSWORD: 'secure1337'
+      FAKE_PLAYERS: '[{"name": "Robin", "steamId": "76561197960435530"},{"name": "jason", "steamId": "76561197978236369"},{"name": "kacksack", "steamId": "76561199641668591"}, {"name": "Psycho", "steamId": "76561198187851659"}, {"name": "генийgameban", "steamId": "76561199731849619"}, {"name": "xeonirvacban", "steamId": "76561198169854045"}, {"name": "atomy", "steamId": "76561197960525500"}]'
+      SERVER_NAME: 'EU Cool rust server'
+      CONVAR_HEADERIMAGE: 'https://imgur.com/ZH9cpXV'

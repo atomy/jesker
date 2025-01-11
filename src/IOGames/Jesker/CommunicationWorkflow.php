@@ -4,6 +4,7 @@ namespace IOGames\Jesker;
 
 use IOGames\Jesker\Model\Entity\AbstractRequest;
 use IOGames\Jesker\Model\Entity\AbstractResponse;
+use IOGames\Jesker\Model\Entity\HeaderimageRequest;
 use IOGames\Jesker\Model\Entity\SourceRcon\ChatResponse;
 use IOGames\Jesker\Model\Entity\SourceRcon\CommandRequest;
 use IOGames\Jesker\Model\Entity\SourceRcon\PasswordRequest;
@@ -16,6 +17,7 @@ use IOGames\Jesker\Service\Data\Database;
 use IOGames\Jesker\Model\Entity\WebRcon\PasswordRequest as WebSocketPasswordRequest;
 use IOGames\Jesker\Model\Entity\WebRcon\PasswordResponse as WebSocketPasswordResponse;
 use IOGames\Jesker\Model\Entity\WebRcon\StatusResponse as WebRconStatusResponse;
+use IOGames\Jesker\Model\Entity\WebRcon\HeaderimageResponse as WebRconHeaderimageResponse;
 
 /**
  * Class CommunicationWorkflow.
@@ -57,6 +59,8 @@ class CommunicationWorkflow
             return [new PasswordResponse()];
         } elseif ($requestEntity instanceof WebsocketAuthRequest) {
             return [];
+        } elseif ($requestEntity instanceof HeaderimageRequest) {
+            return [new WebRconHeaderimageResponse($requestEntity->identifier)];
         } elseif ($requestEntity instanceof WebSocketPasswordRequest) {
             return [new WebSocketPasswordResponse($this->errorWrongPassword, $requestEntity->headers)];
         } elseif ($requestEntity instanceof CommandRequest) {
