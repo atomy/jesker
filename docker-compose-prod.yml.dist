@@ -32,3 +32,6 @@ services:
       RCON_PASSWORD: 'xxxx'
       FAKE_PLAYER_COUNT: 66
       SERVER_NAME: 'name3'
+      QUEUED_PLAYER_COUNT: 20
+      JOINING_PLAYER_COUNT: 33
+

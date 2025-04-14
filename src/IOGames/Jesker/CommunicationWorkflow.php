@@ -52,6 +52,8 @@ class CommunicationWorkflow
             }
 
             $statusResponse->players = LobbyBuilder::getInstance()->getPlayers();
+            $statusResponse->queuedPlayers = getenv('QUEUED_PLAYER_COUNT') ?? 0;
+            $statusResponse->joiningPlayers = getenv('JOINING_PLAYER_COUNT') ?? 0;
             $statusResponse->hostname = Helper::validateAndGetEnv('SERVER_NAME');
 
             return [$statusResponse];

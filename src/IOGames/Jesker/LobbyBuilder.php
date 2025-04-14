@@ -155,4 +155,9 @@ class LobbyBuilder
         // Generate a random IPv4 address
         return sprintf('%d.%d.%d.%d', rand(1, 255), rand(0, 255), rand(0, 255), rand(0, 255));
     }
+
+    public function getQueuedPlayers()
+    {
+
+    }
 }
