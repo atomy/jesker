@@ -1,5 +1,4 @@
-# Use the PHP 8.3 CLI image based on Alpine Linux
-FROM php:8.3-cli-alpine
+FROM php:8.5-cli-alpine
 
 # Install dependencies for PCNTL extension and install the extension
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
